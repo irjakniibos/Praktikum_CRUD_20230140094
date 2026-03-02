@@ -9,6 +9,7 @@ import com.deploy.praktikum1.service.UserService;
 import com.deploy.praktikum1.util.ValidationUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -32,27 +33,45 @@ public class UserServiceImpl implements UserService {
 
         userRepository.save(saveUser);
 
-        UserDto userDto = UserMapper.MAPPER.toUserDtoData(saveUser)
+        UserDto userDto = UserMapper.MAPPER.toUserDtoData(saveUser);
         return userDto;
     }
 
     @Override
     public List<UserDto> getAllUser() {
-        return List.of();
+        List<User> users = userRepository.findAll();
+        List<UserDto> userDto = new ArrayList<>();
+        for (User user : users){
+            userDto.add(UserMapper.MAPPER.toUserDtoData(user));
+        }
+        return userDto;
     }
 
     @Override
     public UserDto getUserById(String id) {
-        return null;
+        User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("user not found"));
+        return UserMapper.MAPPER.toUserDtoData(user);
     }
 
     @Override
     public UserDto UpdateUser(String id, UserAddRequest request) {
-        return null;
+        validationUtil.validate(request);
+
+        User existingUser = userRepository.findById(id).orElseThrow(() ->new RuntimeException("user not found"));
+        User user = User.builder()
+                .id(existingUser.getId())
+                .name(request.getName())
+                .age(request.getAge())
+                .build();
+        userRepository.save(user);
+
+        return UserMapper.MAPPER.toUserDtoData(user);
     }
 
     @Override
     public void DeleteUser(String id) {
+        User user = userRepository.findById(id).orElseThrow(()-> new RuntimeException("user not found"));
+        userRepository.delete(user);
 
     }
 }
