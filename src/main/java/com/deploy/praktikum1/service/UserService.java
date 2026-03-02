@@ -1,4 +1,4 @@
-package com.deploy.praktikum1.service.lmpl;
+package com.deploy.praktikum1.service;
 
 import com.deploy.praktikum1.model.dto.UserAddRequest;
 import com.deploy.praktikum1.model.dto.UserDto;
